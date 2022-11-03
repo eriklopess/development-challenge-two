@@ -11,6 +11,7 @@ import { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CustomerTable from '../components/CustomerTable';
+import Customer from '../interfaces/customer.interface';
 
 const createCustomerBoxStyles = {
   display: 'flex',
@@ -24,6 +25,13 @@ const createCustomerBoxStyles = {
   },
 };
 
+const createCustomerObject: Customer = {
+  name: '',
+  email: '',
+  address: '',
+  birthDate: '',
+};
+
 export default function Customers(): JSX.Element {
   const [createCustomerFields, setCreateCustomerFields] = useState({
     name: '',
@@ -32,14 +40,17 @@ export default function Customers(): JSX.Element {
     birthDate: '',
   });
   const [open, setOpen] = useState(false);
-  const handleCreateCustomer = () => {
+  const handleCreateCustomerOpen = () => {
     if (!open) {
       setOpen(true);
     } else {
       setOpen(false);
     }
+  };
 
-    console.log('create customer');
+  const handleCreateCustomerSubmit = () => {
+    console.log(createCustomerFields);
+    setCreateCustomerFields(createCustomerObject);
   };
 
   const validadeEmail = (email: string) => {
@@ -64,10 +75,9 @@ export default function Customers(): JSX.Element {
     const day = dateSplit[2];
     const re = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
     if (re.test(date)) {
-      if (year >= '1900' && year <= '2020') {
+      if (year >= '1900' && year <= '2021') {
         if (month >= '01' && month <= '12') {
           if (day >= '01' && day <= '31') {
-            console.log('true');
             return true;
           }
         }
@@ -111,7 +121,7 @@ export default function Customers(): JSX.Element {
     <Box sx={{ p: 1 }}>
       <Box sx={{ pl: 2, display: 'flex' }}>
         <DialogTitle>Clientes</DialogTitle>
-        <IconButton onClick={handleCreateCustomer}>
+        <IconButton onClick={handleCreateCustomerOpen}>
           { open ? <CancelIcon /> : <AddCircleIcon />}
         </IconButton>
       </Box>
@@ -127,19 +137,24 @@ export default function Customers(): JSX.Element {
               label="Nome"
               name="name"
               onChange={handleChange}
+              value={createCustomerFields.name}
+              error={!validateName(createCustomerFields.name)}
             />
             <TextField
               required
               label="Email"
               name="email"
               onChange={handleChange}
-
+              value={createCustomerFields.email}
+              error={!validadeEmail(createCustomerFields.email)}
             />
             <TextField
               required
               label="Endereço"
               name="address"
+              value={createCustomerFields.address}
               onChange={handleChange}
+              error={!validateAddress(createCustomerFields.address)}
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
@@ -152,10 +167,8 @@ export default function Customers(): JSX.Element {
             </LocalizationProvider>
             <Button
               variant="contained"
-              color={
-              checkAllFields() ? 'success' : 'error'
-            }
               disabled={!checkAllFields()}
+              onClick={handleCreateCustomerSubmit}
             >
               Criar
             </Button>
