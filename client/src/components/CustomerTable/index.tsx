@@ -12,51 +12,50 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import TableHead from '@mui/material/TableHead';
 import IconButton from '@mui/material/IconButton';
-import { useCustomers } from '../../context/customer.context';
+import useCustomers from '../../hooks/useCustomers';
 import Customer from '../../interfaces/customer.interface';
+import {
+  tableCellHeader, tableContainerStyle, tableFooterStyle, tableRowStyle,
+} from './style';
 
 export default function CustomerTable(): JSX.Element {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [customers, setCustomers] = useCustomers();
+  const [customers] = useCustomers();
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - customers.length) : 0;
-
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
-  ) => {
+  ): void => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  ): void => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleDeleteUser = (email: string) => {
+  const handleDeleteUser = (): void => {
   };
 
-  const handleEditUser = (email: string) => {
-    console.log(email);
+  const handleEditUser = (): void => {
   };
 
   return (
     <TableContainer
       component={Paper}
-      sx={{
-        display: 'flex', width: '95%', m: 'auto',
-      }}
+      sx={tableContainerStyle}
     >
-      <Table sx={{ minWidth: 500 }} aria-label="customers table" size="small">
+      <Table sx={{ minWidth: 650 }} aria-label="customers table" size="small" stickyHeader>
         <TableHead>
-          <TableRow sx={{ bgcolor: '#333333' }}>
+          <TableRow>
             {['Nome', 'Email', 'Data de Nascimento', 'Endereço', 'Excluir', 'Editar'].map((header) => (
               <TableCell
                 key={header}
-                sx={{ color: 'white' }}
+                sx={tableCellHeader}
               >
                 {header}
               </TableCell>
@@ -70,7 +69,7 @@ export default function CustomerTable(): JSX.Element {
           ).map((customer: Customer) => (
             <TableRow
               key={customer.name}
-              sx={{ '&:nth-child(even)': { bgcolor: '#f2f1ec' }, boxShadow: 0 }}
+              sx={tableRowStyle}
             >
               {
                 Object.values(customer).map((value) => (
@@ -80,12 +79,12 @@ export default function CustomerTable(): JSX.Element {
                 ))
               }
               <TableCell style={{ width: 50 }}>
-                <IconButton onClick={() => handleDeleteUser(customer.email)}>
+                <IconButton onClick={() => handleDeleteUser()}>
                   <DeleteIcon />
                 </IconButton>
               </TableCell>
               <TableCell style={{ width: 50 }}>
-                <IconButton onClick={() => handleEditUser(customer.email)}>
+                <IconButton onClick={() => handleEditUser()}>
                   <EditIcon />
                 </IconButton>
               </TableCell>
@@ -97,7 +96,7 @@ export default function CustomerTable(): JSX.Element {
             </TableRow>
           )}
         </TableBody>
-        <TableFooter>
+        <TableFooter sx={tableFooterStyle}>
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, 50, { label: 'Todos', value: -1 }]}
@@ -110,7 +109,11 @@ export default function CustomerTable(): JSX.Element {
                   'aria-label': 'rows per page',
                 },
               }}
-              labelRowsPerPage="Linhas por página:"
+              labelRowsPerPage={
+                window.innerWidth < 750
+                  ? 'Linhas:'
+                  : 'Linhas por página:'
+              }
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               ActionsComponent={TablePaginationActions}

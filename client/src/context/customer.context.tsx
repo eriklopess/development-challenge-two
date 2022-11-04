@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useState, useMemo } from 'react';
 import Customer from '../interfaces/customer.interface';
 
 export const CustomerContext = React.createContext([]);
@@ -8,7 +8,79 @@ type ProviderProps = {
 };
 
 export default function CustomerProvider({ children }: ProviderProps): JSX.Element {
-  const [customers, setCustomers] = useState<Customer[] | []>([]);
+  const [customers, setCustomers] = useState<Customer[] | []>([{
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St asdds saddasadsadss',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  },
+  {
+    name: 'John Doe',
+    email: 'asd@asd.com',
+    birthDate: '1990-01-01',
+    address: '123 Main St',
+  }]);
   const customersProviderValue: any = useMemo(() => ({
     customers,
     setCustomers,
@@ -18,12 +90,4 @@ export default function CustomerProvider({ children }: ProviderProps): JSX.Eleme
       {children}
     </CustomerContext.Provider>
   );
-}
-
-export function useCustomers(): [Customer[] | [],
-
-  React.Dispatch<React.SetStateAction<[] | Customer[]>>] {
-  const context = useContext(CustomerContext);
-  const { customers, setCustomers } = context as any;
-  return [customers, setCustomers];
 }

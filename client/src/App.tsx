@@ -9,10 +9,7 @@ function App() {
     <BrowserRouter>
       <CustomerProvider>
         <Routes>
-          <Route path="/" />
-          <Route path="/register" />
-          <Route path="/login" />
-          <Route path="/customers" element={<Customers />} />
+          <Route path="/" element={<Customers />} />
         </Routes>
       </CustomerProvider>
     </BrowserRouter>
