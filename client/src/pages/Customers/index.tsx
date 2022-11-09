@@ -5,8 +5,9 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CustomerTable from '../../components/CustomerTable';
-import CreateCustomerForm from '../../components/CreateCustomerForm';
+import CreateCustomerForm from '../../components/Forms/CreateCustomerForm';
 import { boxContainerStyle, boxCreateCustomerStyle } from './style';
+import DrawerComponent from '../../components/Drawer';
 
 export default function Customers(): JSX.Element {
   const [open, setOpen] = useState(false);
@@ -17,24 +18,26 @@ export default function Customers(): JSX.Element {
       setOpen(false);
     }
   };
-
   return (
     <Box sx={boxContainerStyle}>
+      <DrawerComponent />
       <Box sx={{ pl: 2, display: 'flex' }}>
         <DialogTitle>Clientes</DialogTitle>
         <IconButton onClick={handleCreateCustomerOpen}>
           { open ? <CancelIcon /> : <AddCircleIcon />}
         </IconButton>
       </Box>
-      <Box
-        component="div"
-        sx={boxCreateCustomerStyle}
-      >
-        {
-          open && <CreateCustomerForm />
+      {
+          open ? (
+            <Box
+              component="div"
+              sx={boxCreateCustomerStyle}
+            >
+              <CreateCustomerForm />
+            </Box>
+          ) : <CustomerTable />
         }
-      </Box>
-      <CustomerTable />
     </Box>
+
   );
 }
