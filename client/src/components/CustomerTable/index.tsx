@@ -26,6 +26,8 @@ import EditableRow from './EditableRow';
 import {
   tableCellHeader, tableContainerStyle, tableRowStyle,
 } from './style';
+import SuccessAlert from '../Alerts/SuccessAlert';
+import ErrorAlert from '../Alerts/ErrorAlert';
 
 export default function CustomerTable(): JSX.Element {
   const [page, setPage] = useState(0);
@@ -53,12 +55,33 @@ export default function CustomerTable(): JSX.Element {
     setPage(0);
   };
 
+  const [showSuccessDeleteAlert, setShowSuccessDeleteAlert] = useState<boolean>(false);
+  const [showErrorDeleteAlert, setShowErrorDeleteAlert] = useState<boolean>(false);
+
   const handleDeleteUser = async (id: string): Promise<void> => {
     const confirmDelete = window.confirm('Tem certeza que deseja deletar este usuário?');
     if (confirmDelete) {
-      await deleteCustomer(id);
-      getCustomers().then((response: Customer[]) => {
-        setCustomers(response);
+      deleteCustomer(id).then((response) => {
+        if (response.status === 204) {
+          setShowSuccessDeleteAlert(true);
+          setTimeout(
+            () => {
+              setShowSuccessDeleteAlert(false);
+            },
+            3000,
+          );
+        }
+        getCustomers().then((res: Customer[]) => {
+          setCustomers(res);
+        });
+      }).catch(() => {
+        setShowErrorDeleteAlert(true);
+        setTimeout(
+          () => {
+            setShowErrorDeleteAlert(false);
+          },
+          3000,
+        );
       });
     }
   };
@@ -71,6 +94,8 @@ export default function CustomerTable(): JSX.Element {
     address: '',
     birthDate: null,
   });
+  const [showSuccessUpdateAlert, setShowSuccessUpdateAlert] = useState<boolean>(false);
+  const [showErrorUpdateAlert, setShowErrorUpdateAlert] = useState<boolean>(false);
   const handleActiveEditUser = (id: string): void => {
     setIsEditing(true);
     setCustomerId(id);
@@ -79,7 +104,22 @@ export default function CustomerTable(): JSX.Element {
   const handleSendEditUser = async (): Promise<void> => {
     const isValid = checkAllFields(editedCustomer);
     if (isValid) {
-      await updateCustomer(editedCustomer, editedCustomer.id);
+      updateCustomer(editedCustomer, editedCustomer.id).then((response) => {
+        if (response.status === 201) {
+          setShowSuccessUpdateAlert(true);
+          setTimeout(() => {
+            setShowSuccessUpdateAlert(false);
+          }, 3000);
+        } else {
+          setShowErrorUpdateAlert(true);
+          setTimeout(
+            () => {
+              setShowErrorUpdateAlert(false);
+            },
+            3000,
+          );
+        }
+      });
       getCustomers().then((response: Customer[]) => {
         setCustomers(response);
       });
@@ -89,24 +129,26 @@ export default function CustomerTable(): JSX.Element {
   };
 
   return (
-    <TableContainer
-      component={Paper}
-      sx={tableContainerStyle}
-    >
-      <Table sx={{ minWidth: 650 }} aria-label="customers table" size="small" stickyHeader>
-        <TableHead>
-          <TableRow>
-            {['Nome', 'Email', 'Data de Nascimento', 'Endereço', 'Excluir', 'Editar'].map((header) => (
-              <TableCell
-                key={header}
-                sx={tableCellHeader}
-              >
-                {header}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        {
+    <>
+
+      <TableContainer
+        component={Paper}
+        sx={tableContainerStyle}
+      >
+        <Table sx={{ minWidth: 650 }} aria-label="customers table" size="small" stickyHeader>
+          <TableHead>
+            <TableRow>
+              {['Nome', 'Email', 'Data de Nascimento', 'Endereço', 'Excluir', 'Editar'].map((header) => (
+                <TableCell
+                  key={header}
+                  sx={tableCellHeader}
+                >
+                  {header}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          {
               customers.length > 0 ? (
                 <TableBody>
                   {(rowsPerPage > 0
@@ -168,27 +210,48 @@ export default function CustomerTable(): JSX.Element {
                 </TableBody>
               )
             }
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, 50, { label: 'Todos', value: -1 }]}
-              colSpan={3}
-              count={customers.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-              }}
-              labelRowsPerPage="Linhas por página:"
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, 50, { label: 'Todos', value: -1 }]}
+                colSpan={3}
+                count={customers.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                SelectProps={{
+                  inputProps: {
+                    'aria-label': 'rows per page',
+                  },
+                }}
+                labelRowsPerPage="Linhas por página:"
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </TableContainer>
+      {
+          showSuccessUpdateAlert && (
+            <SuccessAlert text="Cliente foi atualizado com sucesso!" />
+          )
+    }
+      {
+          showErrorUpdateAlert && (
+            <ErrorAlert text="Erro ao atualizar cliente" />
+          )
+    }
+      {
+          showSuccessDeleteAlert && (
+            <SuccessAlert text="Cliente foi deletado com sucesso!" />
+          )
+    }
+      {
+          showErrorDeleteAlert && (
+            <ErrorAlert text="Erro ao deletar cliente" />
+          )
+    }
+    </>
   );
 }
