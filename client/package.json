@@ -13,7 +13,7 @@
     "@emotion/styled": "^11.10.5",
     "@mui/core": "^5.0.0-alpha.54",
     "@mui/icons-material": "^5.10.9",
-    "@mui/material": "^5.10.11",
+    "@mui/material": "^5.11.14",
     "@mui/x-data-grid": "^5.17.9",
     "@mui/x-date-pickers": "^5.0.6",
     "axios": "^1.1.3",
